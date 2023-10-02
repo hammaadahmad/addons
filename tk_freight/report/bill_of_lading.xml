@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="bill_of_lading">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="o">
+                    <t t-call="web.internal_layout">
+                        <div class="page">
+                            <h2 align="center">Bill Of Lading</h2>
+                        </div>
+                        <br/>
+                        <table class="table table-borderless m-0">
+                            <tbody>
+                                <tr>
+                                    <td>Transport Via</td>
+                                    <td>
+                                        <strong>
+                                            <span t-field="o.transport"/>
+                                        </strong>
+                                    </td>
+                                    <td rowspan="3">
+                                        <table class="table table-condensed" align="right"
+                                               style="border-bottom: 0px solid white !important;width: 3in;">
+                                            <div class="col-xs-4" style="padding:0;">
+                                                <tr style="width: 1in;">
+                                                    <td style="border: 2px solid black;text-align: center; vertical-align: middle;"
+                                                        class="col-xs-5">
+                                                        <img t-if="o.barcode"
+                                                             t-att-src="'/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('EAN13', o.barcode, 600, 150)"
+                                                             style="width:100%;height:30%;"/>
+                                                        <br/>
+                                                        <span t-field="o.barcode"/>
+                                                    </td>
+                                                </tr>
+                                            </div>
+                                        </table>
+                                    </td>
+                                    <tr>
+                                        <td>Tracking No.</td>
+                                        <td>
+                                            <strong>
+                                                <span t-field="o.tracking_number"/>
+                                            </strong>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Type</td>
+                                        <td>
+                                            <t t-if="o.ocean_shipment_type=='fcl'">
+                                                <spna>
+                                                    <strong>
+                                                        Full Container(FCL)
+                                                    </strong>
+                                                </spna>
+                                            </t>
+                                            <t t-else="">
+                                                <spna>
+                                                    <strong>
+                                                        Less Container(LCL)
+                                                    </strong>
+                                                </spna>
+                                            </t>
+                                        </td>
+                                    </tr>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <table width="100%" style="margin-top:25px" class="table table-bordered">
+                            <tr>
+                                <td>
+                                    <strong>Shipper:</strong>
+                                    <br/>
+                                    <span t-esc="o.shipper_id.name"/>
+                                    <br/>
+                                    <span t-esc="o.shipper_id.street"/>
+                                    <br/>
+                                    <span t-esc="o.shipper_id.city"/>
+                                    <br/>
+                                    <span t-esc="o.shipper_id.state_id.name"/>
+                                    <span t-esc="o.shipper_id.country_id.name"/>
+                                    <br/>
+                                </td>
+                                <td>
+                                    <strong>Consignee:</strong>
+                                    <br/>
+                                    <span t-esc="o.consignee_id.name"/>
+                                    <br/>
+                                    <span t-esc="o.consignee_id.street"/>
+                                    <br/>
+                                    <span t-esc="o.consignee_id.city"/>
+                                    <br/>
+                                    <span t-esc="o.consignee_id.state_id.name"/>
+                                    <span t-esc="o.consignee_id.country_id.name"/>
+                                    <br/>
+                                </td>
+                            </tr>
+                        </table>
+                        <table width="100%" style="margin-top:25px" class="table table-bordered">
+                            <tr>
+                                <td colspan="8" align="center">Order Information</td>
+                            </tr>
+                            <tr>
+                                <th style="padding:10px;">CONTAINER NO.</th>
+                                <th style="padding:10px;">SEAL NO.</th>
+                                <th style="padding:10px;">SIZE</th>
+                                <th style="padding:10px;">TYPE</th>
+                                <th style="padding:10px;">QTY</th>
+                                <th style="padding:10px;">GW</th>
+                                <th style="padding:10px;">NW</th>
+                                <th style="padding:10px;">CBM</th>
+                            </tr>
+                            <tbody>
+                                <tr t-foreach="o.freight_packages" t-as="p">
+                                    <td>
+                                        <span>
+                                            <span t-field="p.name"/>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span>
+                                            <span t-field="p.seal_number"/>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span>
+                                            <span t-field="p.package"/>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span>
+                                            <span t-field="p.container_type"/>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span>
+                                            <span t-field="p.qty"/>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span>
+                                            <span t-field="p.gross_weight"/>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span>
+                                            <span t-field="p.net_weight"/>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span>
+                                            <span t-field="p.volume"/>
+                                        </span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </t>
+                </t>
+            </t>
+        </template>
+    </data>
+</odoo>

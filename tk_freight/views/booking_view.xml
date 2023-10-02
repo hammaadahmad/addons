@@ -1,0 +1,340 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="freight_booking_form_view">
+            <field name="name">freight.booking.form.view</field>
+            <field name="model">shipment.freight.booking</field>
+            <field name="arch" type="xml">
+                <form>
+                    <header>
+                        <field name="id" invisible="1"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,converted"/>
+                        <button name="convert_to_operation" string="Convert To Shipment" type="object"
+                                default_focus="1" class="btn btn-outline-dark"
+                                attrs="{'invisible':['|',('id','=',False),('state','in',['converted','cancel'])]}"/>
+                        <button name="convert_to_cancel" string="Cancel" type="object"
+                                default_focus="1" class="btn btn-outline-dark"
+                                attrs="{'invisible':['|',('id','=',False),('state','in',['converted','cancel'])]}"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title mb24">
+                            <h1>
+                                <field class="text-break" name="name" default_focus="1" readonly="1"/>
+                            </h1>
+                            <h3>
+                                <field name="direction" widget="radio" required="1"
+                                       options="{'horizontal': true}"/>
+                            </h3>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="operation" string="Type" required="1"/>
+                            </group>
+                            <group>
+                                <field name="create_datetime"/>
+                            </group>
+                        </group>
+                        <group string="Transport Details">
+                            <group>
+                                <field name="transport" string="Transport Via" widget="radio"
+                                       options="{'horizontal': true}" required="1"/>
+                                <field name="freight_id" readonly="1" attrs="{'invisible':[('state','=','draft')]}"/>
+                            </group>
+                            <group>
+                                <field name="ocean_shipment_type" widget="radio"
+                                       attrs="{'invisible': [('transport','!=','ocean')]}"
+                                       options="{'horizontal': true}"/>
+                                <field name="inland_shipment_type" widget="radio"
+                                       attrs="{'invisible': [('transport','!=','land')]}"
+                                       options="{'horizontal': true}"/>
+                            </group>
+                        </group>
+                        <group string="Address">
+                            <group>
+                                <field name="address_to" widget="radio" options="{'horizontal': true}"/>
+                            </group>
+                        </group>
+                        <group>
+                            <group string="Transporter">
+                                <field name="shipper_id"/>
+                                <span class="o_form_label o_td_label" name="address_name">
+                                    <b></b>
+                                </span>
+                                <div class="o_address_format">
+                                    <field name="shipper_phone" widget="phone"/>
+                                    <field name="shipper_email" widget="email"/>
+                                </div>
+                            </group>
+                            <group string="Customer">
+                                <field name="consignee_id"/>
+                                <span class="o_form_label o_td_label" name="address_name">
+                                    <b></b>
+                                </span>
+                                <div class="o_address_format">
+                                    <field name="consignee_phone" widget="phone"/>
+                                    <field name="consignee_email" widget="email"/>
+                                </div>
+                            </group>
+                        </group>
+                        <group string="Location Details" attrs="{'invisible':[('address_to','!=','location_address')]}">
+                            <group>
+                                <label for="source_location_id" string="From"
+                                       attrs="{'invisible': [('transport','!=','land')]}"/>
+                                <div attrs="{'invisible': [('transport','!=','land')]}">
+                                    <field name="source_location_id"/>
+                                </div>
+                                <label for="source_location_id" string="Loading Port"
+                                       attrs="{'invisible': [('transport','!=','ocean')]}"/>
+                                <div attrs="{'invisible': [('transport','!=','ocean')]}">
+                                    <field name="source_location_id"/>
+                                </div>
+                                <label for="source_location_id" string="Gateway"
+                                       attrs="{'invisible': [('transport','!=','air')]}"/>
+                                <div attrs="{'invisible': [('transport','!=','air')]}">
+                                    <field name="source_location_id"/>
+                                </div>
+                            </group>
+                            <group>
+                                <label for="destination_location_id" string="To"
+                                       attrs="{'invisible': [('transport','!=','land')]}"/>
+                                <div attrs="{'invisible': [('transport','!=','land')]}">
+                                    <field name="destination_location_id"/>
+                                </div>
+                                <label for="destination_location_id" string="Discharge Port"
+                                       attrs="{'invisible': [('transport','!=','ocean')]}"/>
+                                <div attrs="{'invisible': [('transport','!=','ocean')]}">
+                                    <field name="destination_location_id"/>
+                                </div>
+                                <label for="destination_location_id" string="Destination"
+                                       attrs="{'invisible': [('transport','!=','air')]}"/>
+                                <div attrs="{'invisible': [('transport','!=','air')]}">
+                                    <field name="destination_location_id"/>
+                                </div>
+                            </group>
+                        </group>
+                        <group>
+                            <group>
+                                <span class="o_form_label o_td_label" name="address_name">
+                                    <b></b>
+                                </span>
+                                <div class="o_address_format">
+                                    <field name="s_street" placeholder="Address Line 1....." class="o_address_street"
+                                           required="0"/>
+                                    <field name="s_street2" placeholder="Address Line 2....." class="o_address_street"/>
+                                    <field name="s_city" placeholder="City" class="o_address_city" required="0"/>
+                                    <field name="s_state_id" class="o_address_state" placeholder="State" required="0"
+                                           options="{'no_open': True, 'no_quick_create': True}"/>
+                                    <field name="s_zip" placeholder="ZIP" class="o_address_zip"/>
+                                    <field name="s_country_id" placeholder="Country" class="o_address_country"
+                                           required="0"
+                                           options="{'no_open': True, 'no_quick_create': True}"/>
+                                </div>
+                            </group>
+                            <group>
+                                <span class="o_form_label o_td_label" name="address_name">
+                                    <b></b>
+                                </span>
+                                <div class="o_address_format">
+                                    <field name="d_street" placeholder="Address Line 1....." class="o_address_street"
+                                           required="0"/>
+                                    <field name="d_street2" placeholder="Address Line 2....." class="o_address_street"/>
+                                    <field name="d_city" placeholder="City" class="o_address_city" required="0"/>
+                                    <field name="d_state_id" class="o_address_state" placeholder="State" required="0"
+                                           options="{'no_open': True, 'no_quick_create': True}"/>
+                                    <field name="d_zip" placeholder="ZIP" class="o_address_zip"/>
+                                    <field name="d_country_id" placeholder="Country" class="o_address_country"
+                                           required="0"
+                                           options="{'no_open': True, 'no_quick_create': True}"/>
+                                </div>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Carriage Details">
+                                <field name="company_id" invisible="1"/>
+                                <field name="currency_id" invisible="1"/>
+                                <group attrs="{'invisible': [('transport','!=','air')]}">
+                                    <group string="Flight Details">
+                                        <field name="airline_id" attrs="{'invisible': [('transport','!=','air')]}"/>
+                                        <field name="airline_owner_id"
+                                               attrs="{'invisible': [('transport','!=','air')]}"/>
+                                        <field name="mawb_no" attrs="{'invisible': [('transport','!=','air')]}"/>
+                                        <field name="flight_no" attrs="{'invisible': [('transport','!=','air')]}"/>
+                                    </group>
+                                    <group string="Estimate Time">
+                                        <field name="pickup_datetime"/>
+                                        <field name="arrival_datetime"/>
+                                    </group>
+                                </group>
+                                <group attrs="{'invisible': [('transport','!=','ocean')]}">
+                                    <group string="Vessel/Ship Details">
+                                        <field name="vessel_id" attrs="{'invisible': [('transport','!=','ocean')]}"/>
+                                        <field name="ship_owner_id"
+                                               attrs="{'invisible': [('transport','!=','ocean')]}"/>
+                                        <field name="obl" attrs="{'invisible': [('transport','!=','ocean')]}"/>
+                                        <field name="voyage_no" attrs="{'invisible': [('transport','!=','ocean')]}"/>
+                                    </group>
+                                    <group string="Estimate Time">
+                                        <field name="pickup_datetime"/>
+                                        <field name="arrival_datetime"/>
+                                    </group>
+                                </group>
+                                <group attrs="{'invisible': [('transport','!=','land')]}" string="Vehicle Details">
+                                    <group>
+                                        <field name="truck_ref" attrs="{'invisible': [('transport','!=','land')]}"/>
+                                        <field name="trucker" attrs="{'invisible': [('transport','!=','land')]}"/>
+                                        <field name="truck_owner_id"
+                                               attrs="{'invisible': [('transport','!=','land')]}"/>
+                                        <field name="trucker_number"
+                                               attrs="{'invisible': [('transport','!=','land')]}"/>
+                                    </group>
+                                    <group string="Estimate Time">
+                                        <field name="pickup_datetime"/>
+                                        <field name="arrival_datetime"/>
+                                    </group>
+                                </group>
+                                <group>
+                                    <group string="Distance/Charges">
+                                        <field name="approx_charges"/>
+                                        <label for="distance" class="mt-1"/>
+                                        <div name="distance">
+                                            <field name="distance" class="oe_inline"/>
+                                            KM
+                                        </div>
+                                    </group>
+                                    <group string="Carriage">
+                                        <label for="length" class="mt-1"/>
+                                        <div name="length">
+                                            <field name="length" class="oe_inline"/>
+                                            cm
+                                        </div>
+
+                                        <label for="width" class="mt-1"/>
+                                        <div name="width">
+                                            <field name="width" class="oe_inline"/>
+                                            cm
+                                        </div>
+
+                                        <label for="height" class="mt-1"/>
+                                        <div name="height">
+                                            <field name="height" class="oe_inline"/>
+                                            cm
+                                        </div>
+
+                                        <label for="weight" class="mt-1"/>
+                                        <div name="weight">
+                                            <field name="weight" class="oe_inline"/>
+                                            kg
+                                        </div>
+                                    </group>
+                                </group>
+                            </page>
+                            <page string="General Information">
+                                <group>
+                                    <group string="Tracking Details">
+                                        <field name="tracking_number"/>
+                                        <field name="barcode"/>
+                                        <field name="agent_id"/>
+                                        <field name="operator_id" string="Responsible"/>
+                                    </group>
+                                    <group string="Other Details">
+                                        <field name="move_type"/>
+                                        <field name="incoterm"/>
+                                        <field name="dangerous_goods"/>
+                                        <field name="dangerous_goods_notes"
+                                               attrs="{'invisible': [('dangerous_goods','!=',True)]}"/>
+                                    </group>
+                                </group>
+                                <group>
+                                    <field name="notes"/>
+                                </group>
+                            </page>
+                            <page string="Cancellation Reason" attrs="{'invisible':[('state','!=','cancel')]}">
+                                <group>
+                                    <group>
+                                        <field name="cancellation_reason_head"
+                                               attrs="{'required':[('state','=','cancel')]}"/>
+                                    </group>
+                                </group>
+                                <group string="Description">
+                                    <field name="cancellation_reason" nolabel="1"
+                                           attrs="{'required':[('state','=','cancel')]}"/>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers" groups="base.group_user"/>
+                        <field name="activity_ids" widget="mail_activity"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="freight_booking_tree_view">
+            <field name="name">freight.booking.tree.view</field>
+            <field name="model">shipment.freight.booking</field>
+            <field name="arch" type="xml">
+                <tree string="Operations">
+                    <field name="name"/>
+                    <field name="direction"/>
+                    <field name="shipper_id"/>
+                    <field name="consignee_id"/>
+                    <field name="source_location_id"/>
+                    <field name="destination_location_id"/>
+                    <field name="agent_id"/>
+                    <field name="transport"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+        <record id="freight_booking_calendar_view" model="ir.ui.view">
+            <field name="name">freight.booking.calendar.view</field>
+            <field name="model">shipment.freight.booking</field>
+            <field name="arch" type="xml">
+                <calendar date_start="create_datetime" mode="month" quick_add="False"
+                          hide_time="True" event_open_popup="True" color="direction">
+                    <field name="name"/>
+                    <field name="source_location_id"/>
+                    <field name="destination_location_id"/>
+                    <field name="shipper_id"/>
+                    <field name="consignee_id"/>
+                    <field name="direction" filters="1"/>
+                    <field name="transport" filters="1"/>
+                    <field name="operation" filters="1"/>
+                </calendar>
+            </field>
+        </record>
+        <record id="freight_booking_search_view" model="ir.ui.view">
+            <field name="name">freight.booking.search.view</field>
+            <field name="model">shipment.freight.booking</field>
+            <field name="arch" type="xml">
+                <search string="Search Bookings">
+                    <field name="shipper_id"/>
+                    <field name="consignee_id"/>
+                    <field name="agent_id"/>
+                    <!--                    <field name="stage_id" domain="[]"/>-->
+                    <field name="operation"/>
+                    <filter string="Direct" domain="[('operation', '=', 'direct')]" name="direct"/>
+                    <filter string="House" domain="[('operation', '=', 'house')]" name="house"/>
+                    <filter string="Master" domain="[('operation', '=', 'master')]" name="master"/>
+                    <separator/>
+                    <group expand="0" string="Group By">
+                        <filter string="Shipper" name="shipper" domain="[]" context="{'group_by':'shipper_id'}"/>
+                        <filter string="Consignee" name="job" domain="[]" context="{'group_by':'consignee_id'}"/>
+                        <filter string="Agent" name="degree" domain="[]" context="{'group_by':'agent_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="freight_booking_action">
+            <field name="name">Bookings</field>
+            <field name="res_model">shipment.freight.booking</field>
+            <field name="view_mode">tree,form,calendar,activity</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Click to create a new bookings.
+                </p>
+            </field>
+        </record>
+    </data>
+</odoo>

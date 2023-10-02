@@ -1,0 +1,802 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!--res.partner-->
+        <record id="res_partner_form_inherit_view" model="ir.ui.view">
+            <field name="name">res.partner.form.inherit.view</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//span[@name='address_name']" position="before">
+                    <field name="shipper" invisible="0"/>
+                    <field name="consignee" invisible="0"/>
+                    <field name="agent" invisible="0"/>
+                    <field name="is_policy" invisible="0"/>
+                </xpath>
+                <xpath expr="//notebook/page[@name='internal_notes']" position="after">
+                    <page string="Multiple Invoice">
+                        <field name="multiple_invoice_ids" readonly="1">
+                            <tree>
+                                <field name="date"/>
+                                <field name="amount"/>
+                                <field name="invoice_id" widget="many2one_button"/>
+                            </tree>
+                        </field>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+        <record id="consignee_partner_action" model="ir.actions.act_window">
+            <field name="name">Consignee</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">res.partner</field>
+            <field name="domain">[('consignee','=',True)]</field>
+            <field name="context">{'default_consignee':True}</field>
+            <field name="view_mode">kanban,tree,form,activity</field>
+        </record>
+        <record id="shipper_partner_action" model="ir.actions.act_window">
+            <field name="name">Shipper</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">res.partner</field>
+            <field name="domain">[('shipper','=',True)]</field>
+            <field name="context">{'default_shipper':True}</field>
+            <field name="view_mode">kanban,tree,form,activity</field>
+        </record>
+        <record id="agent_partner_action" model="ir.actions.act_window">
+            <field name="name">Agent</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">res.partner</field>
+            <field name="domain">[('agent','=',True)]</field>
+            <field name="context">{'default_agent':True}</field>
+            <field name="view_mode">kanban,tree,form,activity</field>
+        </record>
+        <record id="policy_company_action" model="ir.actions.act_window">
+            <field name="name">Policy Company</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">res.partner</field>
+            <field name="domain">[('is_policy','=',True),('company_type','=','company')]</field>
+            <field name="context">{'default_is_policy':True,'default_company_type':'company'}</field>
+            <field name="view_mode">kanban,tree,form,activity</field>
+        </record>
+
+        <!--Sale Order-->
+        <record id="freight_quotation_inherit" model="ir.ui.view">
+            <field name="name">freight.quotation.inherit</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='sale_order_template_id']" position="before">
+                    <field name="freight_id" force_save="1" attrs="{'invisible':[('freight_id','=',False)]}"
+                           readonly="1"/>
+                </xpath>
+                <xpath expr="//page[@name='other_information']" position="after">
+                    <page string="Shipment Details" attrs="{'invisible':[('freight_id','=',False)]}">
+                        <group>
+                            <group>
+                                <field name="direction"/>
+                                <field name="operation"/>
+                            </group>
+                            <group>
+                                <field name="transport"/>
+                                <field name="agent_id"/>
+                            </group>
+                        </group>
+                        <group string="Shipper / Consignee">
+                            <group>
+                                <field name="shipper_id"/>
+                            </group>
+                            <group>
+                                <field name="consignee_id"/>
+                            </group>
+                        </group>
+                        <group string="Location">
+                            <group>
+                                <field name="source_location_id"/>
+                            </group>
+                            <group>
+                                <field name="destination_location_id"/>
+                            </group>
+                        </group>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+
+        <!--Vendor Bills-->
+        <record id="freight_vendor_bill_form_inherit" model="ir.ui.view">
+            <field name="name">freight.vendor.bill.form.inherit</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_move_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='partner_id']" position="after">
+                    <field name="freight_operation_id" force_save="1" readonly="1"
+                           attrs="{'invisible':[('freight_operation_id','=',False)]}"/>
+                </xpath>
+                <xpath expr="//page[@name='other_info']" position="after">
+                    <page string="Shipment Details" attrs="{'invisible':[('freight_operation_id','=',False)]}">
+                        <group>
+                            <group>
+                                <field name="direction"/>
+                                <field name="operation"/>
+                            </group>
+                            <group>
+                                <field name="transport"/>
+                                <field name="agent_id"/>
+                            </group>
+                        </group>
+                        <group string="Shipper / Consignee">
+                            <group>
+                                <field name="shipper_id"/>
+                            </group>
+                            <group>
+                                <field name="consignee_id"/>
+                            </group>
+                        </group>
+                        <group string="Location">
+                            <group>
+                                <field name="source_location_id"/>
+                            </group>
+                            <group>
+                                <field name="destination_location_id"/>
+                            </group>
+                        </group>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+
+        <!--Services-->
+        <record id="service_product_action" model="ir.actions.act_window">
+            <field name="name">Services</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">product.product</field>
+            <field name="view_mode">kanban,tree,form</field>
+            <field name="domain">[('type', '=', 'service')]</field>
+            <field name="context">{'search_default_filter_to_sell': 1,'default_detailed_type':'service'}</field>
+        </record>
+
+        <!--Port & Locations-->
+        <record id="port_search_view" model="ir.ui.view">
+            <field name="name">port.search.view</field>
+            <field name="model">freight.port</field>
+            <field name="arch" type="xml">
+                <search string="Search Operations">
+                    <field name="code"/>
+                    <field name="name"/>
+                </search>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="port_form_view">
+            <field name="name">port.form.view</field>
+            <field name="model">freight.port</field>
+            <field name="arch" type="xml">
+                <form string="Ports">
+                    <sheet>
+                        <div class="oe_title mb24">
+                            <h1>
+                                <field class="text-break" name="name" default_focus="1"
+                                       placeholder="Name" required="1"/>
+                            </h1>
+                            <h3>
+                                <span class="d-inline-block">
+                                    <field name="active"/>
+                                    <label for="active"/>
+                                </span>
+                            </h3>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="code" required="1"/>
+                            </group>
+                        </group>
+                        <group>
+                            <group string="Address Details">
+                                <span class="o_form_label o_td_label" name="address_name">
+                                    <b>Address</b>
+                                </span>
+                                <div class="o_address_format">
+                                    <field name="street" placeholder="Address Line 1....." class="o_address_street"
+                                           required="1"/>
+                                    <field name="street2" placeholder="Address Line 2....." class="o_address_street"/>
+                                    <field name="city" placeholder="City" class="o_address_city" required="1"/>
+                                    <field name="state_id" class="o_address_state" placeholder="State" required="1"
+                                           options="{'no_open': True, 'no_quick_create': True}"/>
+                                    <field name="zip" placeholder="ZIP" class="o_address_zip"/>
+                                    <field name="country_id" placeholder="Country" class="o_address_country"
+                                           required="1"
+                                           options="{'no_open': True, 'no_quick_create': True}"/>
+                                </div>
+                            </group>
+                            <group string="Service Details">
+                                <group>
+                                    <span class="d-inline-block">
+                                        <field name="air" required="1"/>
+                                        <label for="air"/>
+                                    </span>
+                                    <span class="d-inline-block">
+                                        <field name="ocean" required="1"/>
+                                        <label for="ocean"/>
+                                    </span>
+                                </group>
+                                <group>
+                                    <span class="d-inline-block">
+                                        <field name="land" required="1"/>
+                                        <label for="land"/>
+                                    </span>
+                                </group>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="port_tree_view">
+            <field name="name">port.tree.view</field>
+            <field name="model">freight.port</field>
+            <field name="arch" type="xml">
+                <tree string="Ports">
+                    <field name="code"/>
+                    <field name="name"/>
+                    <field name="air"/>
+                    <field name="ocean"/>
+                    <field name="land"/>
+                    <field name="active"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="freight_port_action">
+            <field name="name">Ports &amp; Locations</field>
+            <field name="res_model">freight.port</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Click to create a new port.
+                </p>
+            </field>
+        </record>
+
+        <!--Vessel-->
+        <record model="ir.ui.view" id="vessel_form_view">
+            <field name="name">vessel.form.view</field>
+            <field name="model">freight.vessel</field>
+            <field name="arch" type="xml">
+                <form string="Vessels">
+                    <sheet>
+                        <div class="oe_title mb24">
+                            <h1>
+                                <field class="text-break" name="name" default_focus="1"
+                                       placeholder="Name" required="1"/>
+                            </h1>
+                            <h3>
+                                <span class="d-inline-block">
+                                    <field name="active"/>
+                                    <label for="active"/>
+                                </span>
+                            </h3>
+                        </div>
+                        <group string="Ship / Vessels Details">
+                            <group>
+                                <field name="code" required="1"/>
+                                <field name="owner_id" required="1"/>
+                                <field name="port_of_registry"/>
+                                <field name="global_zone"/>
+                            </group>
+                            <group>
+                                <field name="imo_number"/>
+                                <field name="capacity"/>
+                                <field name="country" required="1"/>
+                            </group>
+                        </group>
+                        <group string="Engine Details">
+                            <group>
+                                <field name="engine"/>
+                                <field name="engine_power"/>
+                            </group>
+                            <group>
+                                <field name="speed"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="vessel_tree_view">
+            <field name="name">vessel.tree.view</field>
+            <field name="model">freight.vessel</field>
+            <field name="arch" type="xml">
+                <tree string="Vessels">
+                    <field name="code"/>
+                    <field name="name"/>
+                    <field name="country"/>
+                    <field name="global_zone"/>
+                    <field name="active"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="freight_vessel_action">
+            <field name="name">Vessels</field>
+            <field name="res_model">freight.vessel</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Click to create a new vessel.
+                </p>
+            </field>
+        </record>
+
+        <!--incoterms-->
+        <record model="ir.ui.view" id="incoterms_form_view">
+            <field name="name">incoterms.form.view</field>
+            <field name="model">freight.incoterms</field>
+            <field name="arch" type="xml">
+                <form string="Incoterms">
+                    <sheet>
+                        <div class="oe_title mb24">
+                            <h1>
+                                <field class="text-break" name="name" default_focus="1"
+                                       placeholder="Name" required="1"/>
+                            </h1>
+                            <h3>
+                                <span class="d-inline-block">
+                                    <field name="active"/>
+                                    <label for="active"/>
+                                </span>
+                            </h3>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="code" required="1"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="incoterms_tree_view">
+            <field name="name">incoterms.tree.view</field>
+            <field name="model">freight.incoterms</field>
+            <field name="arch" type="xml">
+                <tree string="Incoterms">
+                    <field name="code"/>
+                    <field name="name"/>
+                    <field name="active"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="freight_incoterms_action">
+            <field name="name">Incoterms</field>
+            <field name="res_model">freight.incoterms</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Click to create a new incoterm.
+                </p>
+            </field>
+        </record>
+
+        <!--Packages-->
+        <record model="ir.ui.view" id="package_form_view">
+            <field name="name">package.form.view</field>
+            <field name="model">freight.package</field>
+            <field name="arch" type="xml">
+                <form string="Packages">
+                    <sheet>
+                        <div class="oe_title mb24">
+                            <h1>
+                                <field class="text-break" name="name" default_focus="1"
+                                       placeholder="Name" required="1"/>
+                            </h1>
+                            <h3>
+                                <span class="d-inline-block">
+                                    <field name="active"/>
+                                    <label for="active"/>
+                                </span>
+                            </h3>
+                        </div>
+                        <span class="d-inline-block" style="margin-right:10px;">
+                            <field name="air"/>
+                            <label for="air"/>
+                        </span>
+                        <span class="d-inline-block" style="margin-right:10px;">
+                            <field name="ocean"/>
+                            <label for="ocean"/>
+                        </span>
+                        <span class="d-inline-block" style="margin-right:10px;">
+                            <field name="land"/>
+                            <label for="land"/>
+                        </span>
+                        <group>
+                            <group string="Used For">
+                                <field name="code" required="1"/>
+                                <field name="container"/>
+                                <field name="item"/>
+                                <field name="company_id" invisible="1"/>
+                                <field name="currency_id" invisible="1"/>
+                                <field name="charge"/>
+                            </group>
+                            <group string="Measurement">
+                                <field name="height" required="1"/>
+                                <field name="width" required="1"/>
+                                <field name="length" required="1"/>
+                                <field name="volume" required="1"/>
+                                <field name="gross_weight" required="1"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="package_tree_view">
+            <field name="name">package.tree.view</field>
+            <field name="model">freight.package</field>
+            <field name="arch" type="xml">
+                <tree string="Packages">
+                    <field name="name"/>
+                    <field name="code"/>
+                    <field name="gross_weight"/>
+                    <field name="volume"/>
+                </tree>
+            </field>
+        </record>
+        <record id="package_search_view" model="ir.ui.view">
+            <field name="name">package.search.view</field>
+            <field name="model">freight.package</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="name"/>
+                    <field name="code"/>
+                    <field name="volume"/>
+                    <field name="length"/>
+                    <separator/>
+                    <filter string="Container" name="container" domain="[('container', '=', True)]"/>
+                    <separator/>
+                    <filter string="Item" name="item" domain="[('item', '=', True)]"/>
+                    <separator/>
+                </search>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="freight_package_action">
+            <field name="name">Packages</field>
+            <field name="res_model">freight.package</field>
+            <field name="view_mode">tree,form,search</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Click to create a new package.
+                </p>
+            </field>
+        </record>
+
+        <!--MoveType-->
+        <record model="ir.ui.view" id="move_type_form_view">
+            <field name="name">move.type.form.view</field>
+            <field name="model">freight.move.type</field>
+            <field name="arch" type="xml">
+                <form string="Move Types">
+                    <sheet>
+                        <div class="oe_title mb24">
+                            <h1>
+                                <field class="text-break" name="name" default_focus="1"
+                                       placeholder="Name" required="1"/>
+                            </h1>
+                            <h3>
+                                <span class="d-inline-block">
+                                    <field name="active"/>
+                                    <label for="active"/>
+                                </span>
+                            </h3>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="code"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="move_type_tree_view">
+            <field name="name">move.type.tree.view</field>
+            <field name="model">freight.move.type</field>
+            <field name="arch" type="xml">
+                <tree string="Move Types">
+                    <field name="code"/>
+                    <field name="name"/>
+                    <field name="active"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="freight_move_type_action">
+            <field name="name">Move Types</field>
+            <field name="res_model">freight.move.type</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Click to create a new move type.
+                </p>
+            </field>
+        </record>
+
+        <!--Airline-->
+        <record model="ir.ui.view" id="airline_form_view">
+            <field name="name">airline.form.view</field>
+            <field name="model">freight.airline</field>
+            <field name="arch" type="xml">
+                <form string="Airline">
+                    <sheet>
+                        <div class="oe_title mb24">
+                            <h1>
+                                <field class="text-break" name="name" default_focus="1"
+                                       placeholder="Name" required="1"/>
+                            </h1>
+                            <h3>
+                                <span class="d-inline-block">
+                                    <field name="active"/>
+                                    <label for="active"/>
+                                </span>
+                            </h3>
+                        </div>
+                        <group string="Airline Details">
+                            <group>
+                                <field name="code" required="1"/>
+                                <field name="icao"/>
+                                <field name="country" required="1"/>
+                            </group>
+                            <group>
+                                <field name="aircraft_type"/>
+                                <field name="owner_id" required="1"/>
+                                <field name="capacity"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="airline_tree_view">
+            <field name="name">airline.tree.view</field>
+            <field name="model">freight.airline</field>
+            <field name="arch" type="xml">
+                <tree string="Airline">
+                    <field name="code"/>
+                    <field name="name"/>
+                    <field name="country"/>
+                    <field name="icao"/>
+                    <field name="active"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="freight_airline_action">
+            <field name="name">Airlines</field>
+            <field name="res_model">freight.airline</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Click to create a new airline.
+                </p>
+            </field>
+        </record>
+
+        <!--Freight Services Charges-->
+        <record model="ir.ui.view" id="freight_service_form_view">
+            <field name="name">freight.service.form.view</field>
+            <field name="model">freight.service</field>
+            <field name="arch" type="xml">
+                <form string="Service">
+                    <sheet>
+                        <group string="Service For">
+                            <group>
+                                <field name="vendor" invisible="1" force_save="1" readonly="1"/>
+                                <field name="service_type" options="{'horizontal':True}"
+                                       widget="radio"/>
+                            </group>
+                            <group>
+                                <field name="sale_order_id" force_save="1" readonly="1"
+                                       attrs="{'invisible':[('sale_order_id','=',False)]}"/>
+                                <field name="vendor_id" force_save="1"
+                                       attrs="{'invisible':[('service_type','=','customer')],'required':[('service_type','=','vendor')],'readonly':[('vendor','=','single')]}"/>
+                                <field name="vendor_invoice"
+                                       attrs="{'invisible':[('vendor_invoice','=',False)]}"
+                                       readonly="1" force_save="1"/>
+                            </group>
+                        </group>
+                        <group string="Service">
+                            <group>
+                                <field name="service_id" required="1"/>
+                            </group>
+                            <group>
+                                <field name="name"/>
+                            </group>
+                        </group>
+                        <group string="Charges">
+                            <group>
+                                <field name="qty"/>
+                            </group>
+                            <group>
+                                <field name="currency_id" invisible="0"/>
+                                <field name="sale"/>
+                                <field name="cost"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="freight_service_tree_view">
+            <field name="name">freight.service.tree.view</field>
+            <field name="model">freight.service</field>
+            <field name="arch" type="xml">
+                <tree string="Service">
+                    <field name="service_type" widget="badge"
+                           decoration-success="service_type=='customer'"
+                           decoration-info="service_type=='vendor'"/>
+                    <field name="service_id"/>
+                    <field name="name"/>
+                    <field name="qty"/>
+                    <field name="sale"/>
+                    <field name="status" widget="badge"
+                           decoration-success="status=='bill'"
+                           decoration-info="status=='quotation'"
+                           decoration-danger="status=='pending'"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="freight_service_action">
+            <field name="name">Service</field>
+            <field name="res_model">freight.service</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Click to create a new service.
+                </p>
+            </field>
+        </record>
+
+        <!--Document Details-->
+        <record id="freight_document_tree_view" model="ir.ui.view">
+            <field name="name">freight.document.tree.view</field>
+            <field name="model">freight.documents</field>
+            <field name="arch" type="xml">
+                <tree string="Document" editable="bottom">
+                    <field name="freight_id"/>
+                    <field name="type_id"/>
+                    <field name="document_date"/>
+                    <field name="file_name" invisible="True"/>
+                    <field name="document" filename="file_name" widget="binary"/>
+                </tree>
+            </field>
+        </record>
+
+        <!--Policy Risk-->
+        <record id="policy_risk_tree_view" model="ir.ui.view">
+            <field name="name">policy.risk.tree.view</field>
+            <field name="model">policy.risk</field>
+            <field name="arch" type="xml">
+                <tree editable="bottom">
+                    <field name="name"/>
+                    <field name="desc"/>
+                </tree>
+            </field>
+        </record>
+        <record id="policy_risk_action" model="ir.actions.act_window">
+            <field name="name">Policy Risk</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">policy.risk</field>
+            <field name="view_mode">tree</field>
+        </record>
+
+        <!--Dashboard-->
+        <record model="ir.ui.view" id="freight_view">
+            <field name="name">Freight Dashboard</field>
+            <field name="model">dashboard.details</field>
+            <field name="arch" type="xml">
+                <kanban>
+                </kanban>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="freight_dashboard_view">
+            <field name="name">Dashboard</field>
+            <field name="model">dashboard.details</field>
+            <field name="arch" type="xml">
+                <kanban>
+                </kanban>
+            </field>
+        </record>
+
+        <!--Frequent Route-->
+        <record model="ir.ui.view" id="frequent_route_form_view">
+            <field name="name">frequent.route.form.view</field>
+            <field name="model">freight.frequent.route</field>
+            <field name="arch" type="xml">
+                <form string="Routes">
+                    <sheet>
+                        <div class="oe_title mb24">
+                            <h1>
+                                <field class="text-break" name="name" default_focus="1"
+                                       placeholder="Name" required="1"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="source_location_id" placeholder="Source Location" required="1"/>
+                            </group>
+                            <group>
+                                <field name="destination_location_id" placeholder="Destination Location" required="1"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="frequent_route_tree_view">
+            <field name="name">frequent.route.tree.view</field>
+            <field name="model">freight.frequent.route</field>
+            <field name="arch" type="xml">
+                <tree string="Route">
+                    <field name="name"/>
+                    <field name="source_location_id"/>
+                    <field name="destination_location_id"/>
+                </tree>
+            </field>
+        </record>
+        <record id="frequent_route_action" model="ir.actions.act_window">
+            <field name="name">Frequent Route</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">freight.frequent.route</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+        <!--Fleet-->
+        <record id="shipment_fleet_inherit_form_view" model="ir.ui.view">
+            <field name="name">shipment.fleet.inherit.form.view</field>
+            <field name="model">fleet.vehicle</field>
+            <field name="inherit_id" ref="fleet.fleet_vehicle_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='active']" position="before">
+                    <field name="is_freight_shipment"/>
+                    <field name="owner_id" attrs="{'required':[('is_freight_shipment','=',True)]}"/>
+                </xpath>
+            </field>
+        </record>
+        <record id="shipmen_fleet_action" model="ir.actions.act_window">
+            <field name="name">Vehicles</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">fleet.vehicle</field>
+            <field name="view_mode">kanban,tree,form,activity</field>
+            <field name="domain">[('is_freight_shipment', '=', True)]</field>
+            <field name="context">{'default_is_freight_shipment': True}</field>
+        </record>
+
+        <!--Freight Tracking Location-->
+        <record model="ir.ui.view" id="shipment_tracking_location_tree_view">
+            <field name="name">shipment.tracking.location.tree.view</field>
+            <field name="model">shipment.location</field>
+            <field name="arch" type="xml">
+                <tree editable="top">
+                    <field name="name" required="1"/>
+                </tree>
+            </field>
+        </record>
+        <record id="shipment_tracking_location_action" model="ir.actions.act_window">
+            <field name="name">Shipment Tracking Location</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">shipment.location</field>
+            <field name="view_mode">tree</field>
+        </record>
+        <!--Freight Tracking Activity-->
+        <record model="ir.ui.view" id="shipment_tracking_activity_tree_view">
+            <field name="name">shipment.tracking.location.activity.view</field>
+            <field name="model">shipment.location.activity</field>
+            <field name="arch" type="xml">
+                <tree editable="top">
+                    <field name="name" required="1"/>
+                </tree>
+            </field>
+        </record>
+        <record id="shipment_tracking_activity_action" model="ir.actions.act_window">
+            <field name="name">Shipment Tracking Activity</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">shipment.location.activity</field>
+            <field name="view_mode">tree</field>
+        </record>
+
+    </data>
+</odoo>
+

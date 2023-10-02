@@ -1,0 +1,561 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="new_bill_of_lading">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="o">
+                    <t t-call="web.internal_layout">
+                        <div class="page">
+                            <style>
+                                body{
+                                line-height:1.2;
+                                font-size:80%; /* For Wkhtmltopdf 1.12.1 */
+                                }
+                                .status{
+                                font-family:'Times New Roman';
+                                font-weight:bold;
+                                text-align:right
+                                }
+                                .package td{
+                                vertical-align:top;
+                                padding:10px;
+                                }
+                                .table td, .table th {
+                                padding:3px 10px;
+                                margin:0px;
+                                border:1px solid black !important;
+                                }
+
+                                .boxed {
+                                border-collapse: collapse;
+                                }
+                                .boxed td, .boxed th {
+                                border: 1px solid black;
+                                padding:3px 10px;
+                                vertical-align:top;
+                                }
+                                .boxed tr:first-child th {
+                                border-top: 0;
+                                }
+                                .boxed tr:last-child td {
+                                border-bottom: 0;
+                                }
+                                .boxed tr td:first-child,
+                                .boxed tr th:first-child {
+                                border-left: 0;
+                                }
+                                .boxed tr td:last-child,
+                                .boxed tr th:last-child {
+                                border-right: 0;
+                                }
+                                .borderless td, .borderless th {
+                                border: none !important;
+                                padding:0px;
+                                margin:0px;
+                                }
+                            </style>
+                            <table class="boxed" width="100%">
+                                <tbody>
+                                    <tr>
+                                        <td colspan="2" style="border-top:none">
+                                            <strong>Consignor</strong>
+                                            <br/>
+                                            <span>
+                                                <span t-field="o.shipper_id.name"/>
+                                            </span>
+                                            <br/>
+                                            <span>
+                                                <span t-field="o.shipper_id.street"/>
+                                                <br/>
+                                                <span t-field="o.shipper_id.street2"/>
+                                                ,
+                                                <span t-field="o.shipper_id.city"/>
+                                                <span t-field="o.shipper_id.zip"/>
+                                                <span t-field="o.shipper_id.state_id.name"/>
+                                                -
+                                                <span t-field="o.shipper_id.country_id.name"/>
+                                                <br/>
+                                                TAX ID :
+                                                <span t-field="o.shipper_id.vat"/>
+                                            </span>
+                                        </td>
+                                        <td style="width:50%;border-top:none">
+                                            <table class="borderless">
+                                                <tbody>
+                                                    <tr>
+                                                        <td rowspan="3"
+                                                            style="vertical-align:middle;padding-right:10px;">
+                                                        </td>
+                                                        <td colspan="2" style="height:35px">
+                                                            <strong style="font-size:20px; margin-right:20px">FBL
+                                                            </strong>
+                                                            <span style="border:2px solid black; padding:5px; font-size:13px; font-weight:bold; width:230px; display:inline-block; text-align:center">
+                                                                <span>
+                                                                    <t t-if="o.bl_number">
+                                                                        <span t-field="o.bl_number"/>
+                                                                    </t>
+                                                                    <t t-else="">
+                                                                        <span t-field="o.name"/>
+                                                                    </t>
+                                                                </span>
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <span style="font-weight:bold; font-size:12px">NEGOTIABLE
+                                                                FIATA<br/>MULTIMODAL TRANSPORT<br/>BILL OF LADING
+                                                            </span>
+                                                        </td>
+                                                        <td style="vertical-align:middle;padding-left:10px;">
+                                                            <img src="/tk_freight/static/src/img/FATil.png"
+                                                                 width="100px"
+                                                                 alt="ICC"/>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td colspan="2">
+                                                            <span style="font-weight:bold; font-size:9px">Issued subject
+                                                                to UNCTAD / ICC Rules for<br/>Multimodal Transport
+                                                                Documents (ICC Publication 481).
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2" style="height:100px">
+                                            <strong>Consigned to order of</strong>
+                                            <br/>
+                                            <span>
+                                                <span t-field="o.consignee_id.name"/>
+                                            </span>
+                                            <br/>
+                                            <span><span t-field="o.consignee_id.street"/>,
+                                                <br/>
+                                                <span t-field="o.consignee_id.street2"/>,
+                                                <span t-field="o.consignee_id.zip"/>,
+                                                <span t-field="o.consignee_id.city"/>,
+                                                <br/>
+                                                <span t-field="o.consignee_id.state_id.name"/>,
+                                                <span t-field="o.consignee_id.country_id.name"/>
+                                                <br/>
+                                                EMAIL :
+                                                <span t-field="o.consignee_id.email"/>
+                                                <br/>
+                                                PH :
+                                                <span t-field="o.consignee_id.phone"/>
+                                            </span>
+                                        </td>
+                                        <td rowspan="5">
+                                            <div class="text-center" style="padding:10px">
+                                                <t t-if="o.company_id.logo">
+                                                    <img t-att-src="image_data_uri(o.company_id.logo)" alt="Logo"
+                                                         style="max-width:350px; max-height:184px"/>
+                                                </t>
+                                                <br/>
+                                                <div name="company_address" class="text-center">
+                                                    <span style="font-family:Calibri; font-size: 17px">
+                                                        <span t-field="o.company_id.name"/>
+                                                    </span>
+                                                    <br/>
+                                                    <span t-field="o.company_id.street"/>
+                                                    <br/>
+                                                    <span t-field="o.company_id.street2"/>
+                                                    <br/>
+                                                    <span t-field="o.company_id.city"/>
+                                                    -
+                                                    <span t-field="o.company_id.zip"/>
+                                                    -
+                                                    <span t-field="o.company_id.state_id.name"/>
+                                                    <br/>
+                                                    <span>
+                                                        <span t-field="o.company_id.country_id.name"/>
+                                                    </span>
+                                                    <br/>
+                                                    Tel. :
+                                                    <span>
+                                                        <span t-field="o.company_id.phone"/>
+                                                    </span>
+                                                    <br/>
+                                                    Website. :
+                                                    <span>
+                                                        <span t-field="o.company_id.website"/>
+                                                    </span>
+                                                    <br/>
+                                                    Email :
+                                                    <span>
+                                                        <span t-field="o.company_id.email"/>
+                                                    </span>
+                                                    <br/>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2" style="height:100px">
+                                            <strong>Notify address</strong>
+                                            <br/>
+                                            <span>SAME AS CONSIGNEE</span>
+                                            <br/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border-right:none">
+                                            <strong>Shipping Line</strong>
+                                            <br/>
+                                            <span t-field="o.ship_owner_id.name"/>
+                                        </td>
+                                        <td style="border-left:none">
+                                            <strong>Place of receipt</strong>
+                                            <br/>
+                                            <span>
+                                                <t t-if="o.address_to=='location_address'">
+                                                    <span t-field="o.location_place_of_receipt"/>
+                                                </t>
+                                                <t t-else="">
+                                                    <t t-if="o.contact_place_of_receipt=='Shipper'">
+                                                        Shipper Address
+                                                    </t>
+                                                    <t t-else="">
+                                                        Consignee Address
+                                                    </t>
+                                                </t>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border-right:none">
+                                            <strong>Ocean Vessel</strong>
+                                            <br/>
+                                            <span t-field="o.vessel_id.name"/>
+                                            <span t-field="o.voyage_no"/>
+                                        </td>
+                                        <td style="border-left:none">
+                                            <strong>Port of loading</strong>
+                                            <br/>
+                                            <span>
+                                                <t t-if="o.address_to=='location_address'">
+                                                    <span t-field="o.source_location_id"/>
+                                                </t>
+                                                <t t-else="">
+                                                    <span t-field="o.shipper_id.city"/>
+                                                    -
+                                                    <span t-field="o.shipper_id.country_id.name"/>
+                                                </t>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border-bottom:1px solid black;border-right:none;">
+                                            <strong>Place of discharge</strong>
+                                            <br/>
+                                            <t t-if="o.address_to=='location_address'">
+                                                <span t-field="o.destination_location_id"/>
+                                            </t>
+                                            <t t-else="">
+                                                <span t-field="o.consignee_id.city"/>
+                                                -
+                                                <span t-field="o.consignee_id.country_id.name"/>
+                                            </t>
+                                        </td>
+                                        <td style="border-bottom:1px solid black;border-left:none;">
+                                            <strong>Place of delivery</strong>
+                                            <br/>
+                                            <t t-if="o.address_to=='location_address'">
+                                                <span t-field="o.location_place_of_delivery"/>
+                                            </t>
+                                            <t t-else="">
+                                                <t t-if="o.contact_place_of_delivery=='Shipper'">
+                                                    Shipper Address
+                                                </t>
+                                                <t t-else="">
+                                                    Consignee Address
+                                                </t>
+                                            </t>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table class="package" width="100%">
+                                <tbody>
+                                    <tr>
+                                        <th>Mark and numbers</th>
+                                        <th>Number and kind of package</th>
+                                        <th>Description of goods</th>
+                                        <th>Gross Weight</th>
+                                    </tr>
+                                </tbody>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <span t-field="o.mask_numbers"/>
+                                        </td>
+                                        <td>
+                                            <span t-field="o.desc_pkg"/>
+                                        </td>
+                                        <td>
+                                            <span t-field="o.notes"/>
+                                        </td>
+                                        <td>
+                                            GROSS WEIGHT
+                                            <br/>
+                                            <span>
+                                                <span t-field="o.package_total_gross"/>
+                                                KG
+                                            </span>
+                                            <br/>
+                                            NET WEIGHT
+                                            <br/>
+                                            <span>
+                                                <span t-field="o.package_total_net"/>
+                                                KG
+                                            </span>
+                                            <br/>
+                                            NET VOLUME
+                                            <br/>
+                                            <span>
+                                                <span t-field="o.package_total_volume"/>
+                                                CBM
+                                            </span>
+                                            <br/>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table width="100%">
+                                <tbody>
+                                    <tr>
+                                        <td style="width:33%">
+                                            CONT AND SEAL NO:
+                                            <br/>
+                                            <t t-foreach="o.freight_packages" t-as="p">
+                                                <span>
+                                                    <span t-field="p.name"/>
+                                                    <span t-field="p.seal_number"/>
+                                                </span>
+                                                <br/>
+                                            </t>
+                                        </td>
+                                        <td style="width:35%">
+                                        </td>
+                                        <td style="width:32%">
+                                            <h1 class="status">
+                                                <span style="font-size:20px;color: #0000FF;">
+                                                    <t t-if="o.bl_document_type=='Draft'">
+                                                        DRAFT
+                                                    </t>
+                                                    <t t-if="o.bl_document_type=='Copy'">
+                                                        COPY NON NEGOTIABLE
+                                                    </t>
+                                                    <t t-if="o.bl_document_type=='original'">
+                                                        ORIGINAL
+                                                    </t>
+                                                </span>
+                                            </h1>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <p style="font-weight:bold; text-align:center; border-bottom:1px solid #000;">according to
+                                the declaration of the consignor
+                            </p>
+                            <div class="col-xs-12" style="font-weight:bold">
+                                <div class="col-xs-6 pull-left">
+                                    Declaration of interest of the consignor
+                                    <br/>
+                                    In timely delivery (Clause 6.2)
+                                    <p style="border:2px solid black; width:400px; height:30px;margin-top:5px"></p>
+                                </div>
+                                <div class="col-xs-6 pull-right">
+                                    Declaration value for ad valorem rate according to
+                                    <br/>
+                                    The declaration of the consignor (Clauses 7 and 8).
+                                    <p style="border:2px solid black; width:400px; height:30px;margin-top:5px"></p>
+                                </div>
+                            </div>
+                            <div style="clear:both"></div>
+                            <p style="font-weight:bold">
+                                The goods and instructions are accepted and dealt with subject to the Standard
+                                Conditions printed overleaf.
+                                <br/>
+                                <br/>
+                                Taken in charge in apparent good order and condition, unless otherwise noted herein, at
+                                the place of receipt for transport and delivery as mentioned above.
+                                <br/>
+                                <br/>
+                                One of these Multimodal Transport Bills of Lading must be surrendered duly endorsed in
+                                exchange for the goods. In Witness whereof the original Multimodal Transport Bills of
+                                Lading all of this tenor and date have been signed in the number stated below, one of
+                                which being accomplished the other(s) to be void.
+                            </p>
+                            <table class="table table-bordered">
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <strong>Freight amount</strong>
+                                            <br/>
+                                            <span t-field="o.freight_amount"/>
+                                        </td>
+                                        <td>
+                                            <strong>Freight payable at</strong>
+                                            <br/>
+                                            <span>
+                                                <span t-field="o.freight_payable"/>
+                                            </span>
+                                        </td>
+                                        <td style="border-right-color:#FFF !important">
+                                            <strong>Date of issue</strong>
+                                            <br/>
+                                            <span>
+                                                <span t-field="o.si_issue_date"/>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <strong>Cargo insurance through the undersigned</strong>
+                                            <br/>
+                                            <span>
+                                                <t t-if="o.is_freight_insurance">
+                                                    <input type="checkbox"/>
+                                                    Not covered
+                                                    <span style="margin-right:20px"/>
+                                                    <input type="checkbox" checked="1"/>
+                                                    Covered according to attached policy
+                                                </t>
+                                                <t t-else="">
+                                                    <input type="checkbox" checked="1"/>
+                                                    Not covered
+                                                    <span style="margin-right:20px"/>
+                                                    <input type="checkbox"/>
+                                                    Covered according to attached policy
+                                                </t>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <strong>Number of original FBL’s</strong>
+                                            <br/>
+                                            <span>
+                                                <t t-if="o.no_bill=='zero'">
+                                                    (0) ZERO
+                                                </t>
+                                                <t t-if="o.no_bill=='three'">
+                                                    (3) THREE
+                                                </t>
+                                                <t t-if="o.no_bill=='surrender'">
+                                                    SURRENDER
+                                                </t>
+                                            </span>
+                                        </td>
+                                        <td rowspan="2"
+                                            style="border-bottom-color:#FFF !important; border-right-color:#FFF !important">
+                                            <strong>Stamp and signature</strong>
+                                            <br/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2" width="70%" height="85px"
+                                            style="border-bottom-color:#FFF !important;">
+                                            <strong>For delivery of goods please apply to:</strong>
+                                            <br/>
+                                            <span>
+                                                <span t-field="o.agent_id.name"/>
+                                            </span>
+                                            <br/>
+                                            <span>
+                                                <span t-field="o.agent_id.street"/>
+                                                <br/>
+                                                <span t-field="o.agent_id.street2"/>
+                                                -
+                                                <span t-field="o.agent_id.city"/>
+                                                -
+                                                <span t-field="o.agent_id.zip"/>
+                                                <br/>
+                                                <span t-field="o.agent_id.state_id.name"/>
+                                                -
+                                                <span t-field="o.agent_id.country_id.name"/>
+                                                <br/>
+                                                EMAIL:
+                                                <span t-field="o.agent_id.email"/>
+                                                <br/>
+                                                Tel:
+                                                <span t-field="o.agent_id.phone"/>
+                                                <br/>
+                                                Website:
+                                                <span t-field="o.agent_id.website"/>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <p>
+                                <strong>ATTACHMENT LIST CONTAINER FOR SHIPMENT BL NO :</strong>
+                            </p>
+                            <table class="table table-bordered">
+                                <tbody>
+                                    <tr class="text-center">
+                                        <th>CONTAINER NO.</th>
+                                        <th>SEAL NO.</th>
+                                        <th>SIZE</th>
+                                        <th>TYPE</th>
+                                        <th>QTY</th>
+                                        <th>GW</th>
+                                        <th>NW</th>
+                                        <th>CBM</th>
+                                    </tr>
+                                    <t t-foreach="o.freight_packages" t-as="p">
+                                        <tr>
+                                            <td>
+                                                <span>
+                                                    <span t-field="p.name"/>
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span>
+                                                    <span t-field="p.seal_number"/>
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span>
+                                                    <span t-field="p.package"/>
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span>
+                                                    <span t-field="p.container_type"/>
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span>
+                                                    <span t-field="p.qty"/>
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span>
+                                                    <span t-field="p.gross_weight"/>
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span>
+                                                    <span t-field="p.net_weight"/>
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span>
+                                                    <span t-field="p.volume"/>
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+    </data>
+</odoo>

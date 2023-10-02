@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="bill_of_lading_report" model="ir.actions.report">
+            <field name="name">Bill Of Lading (OLD)</field>
+            <field name="model">freight.shipment</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">tk_freight.bill_of_lading</field>
+            <field name="report_file">tk_freight.bill_of_lading</field>
+            <field name="binding_model_id" ref="model_freight_shipment"/>
+            <field name="binding_type">report</field>
+        </record>
+        <record id="new_bill_of_lading_report" model="ir.actions.report">
+            <field name="name">Bill Of Lading</field>
+            <field name="model">freight.shipment</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">tk_freight.new_bill_of_lading</field>
+            <field name="report_file">tk_freight.new_bill_of_lading</field>
+            <field name="binding_model_id" ref="model_freight_shipment"/>
+            <field name="binding_type">report</field>
+        </record>
+        <record id="airway_bill_report" model="ir.actions.report">
+            <field name="name">Airway Bill (OLD)</field>
+            <field name="model">freight.shipment</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">tk_freight.airway_bill</field>
+            <field name="report_file">tk_freight.airway_bill</field>
+            <field name="binding_model_id" ref="model_freight_shipment"/>
+            <field name="binding_type">report</field>
+        </record>
+        <record id="new_airway_bill_report" model="ir.actions.report">
+            <field name="name">Airway Bill (AWB)</field>
+            <field name="model">freight.shipment</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">tk_freight.new_airway_bill</field>
+            <field name="report_file">tk_freight.new_airway_bill</field>
+            <field name="binding_model_id" ref="model_freight_shipment"/>
+            <field name="binding_type">report</field>
+        </record>
+        <record id="cmr_lading_report" model="ir.actions.report">
+            <field name="name">CMR</field>
+            <field name="model">freight.shipment</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">tk_freight.cmr_bill</field>
+            <field name="report_file">tk_freight.cmr_bill</field>
+            <field name="binding_model_id" ref="model_freight_shipment"/>
+            <field name="binding_type">report</field>
+        </record>
+        <record id="freight_details_report" model="ir.actions.report">
+            <field name="name">Shipment Details</field>
+            <field name="model">freight.shipment</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">tk_freight.freight_report</field>
+            <field name="report_file">tk_freight.freight_report</field>
+            <field name="binding_model_id" ref="model_freight_shipment"/>
+            <field name="binding_type">report</field>
+        </record>
+        <record id="freight_instruction_report" model="ir.actions.report">
+            <field name="name">Shipment Instruction</field>
+            <field name="model">freight.shipment</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">tk_freight.shipping_instruction</field>
+            <field name="report_file">tk_freight.shipping_instruction</field>
+            <field name="binding_model_id" ref="model_freight_shipment"/>
+            <field name="binding_type">report</field>
+        </record>
+    </data>
+</odoo>
